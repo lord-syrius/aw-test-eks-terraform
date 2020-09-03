@@ -46,6 +46,7 @@ image:
     - terraform plan -out=$CI_ENVIRONMENT_NAME-plan.tfplan
       -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
       -var-file=eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=ingress-${CI_ENVIRONMENT_NAME}.tfvars
       -input=false
   artifacts:
     paths:
@@ -75,6 +76,7 @@ image:
     - terraform destroy
       -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
       -var-file=eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=ingress-${CI_ENVIRONMENT_NAME}.tfvars
       -auto-approve
 
 #######################
