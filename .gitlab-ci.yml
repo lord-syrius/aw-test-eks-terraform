@@ -53,12 +53,18 @@ image:
 
 .apply_template: &apply_template
   stage: deploy
+  when: manual
   <<: *terraform_init_template
   script:
     - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
       terraform workspace new ${CI_ENVIRONMENT_NAME})
     - terraform apply -input=false $CI_ENVIRONMENT_NAME-plan.tfplan
 
+##############################################################
+#                       DANGER ZONE!                         #
+# this job will destroy your infrastructure                  #
+# use it only if you need to remove your Terraform resources #
+##############################################################
 .destroy_template: &destroy_template
   stage: flush
   when: manual
