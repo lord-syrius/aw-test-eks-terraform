@@ -43,7 +43,7 @@ image:
     - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
       terraform workspace new ${CI_ENVIRONMENT_NAME})
     - terraform plan -out=$CI_ENVIRONMENT_NAME-plan.tfplan
-      -var-file=config-variables/${CI_ENVIRONMENT_NAME}/variables.tfvars
+      -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
       -input=false
   artifacts:
     paths:
@@ -67,7 +67,7 @@ image:
 # common jobs - start #
 #######################
 
-pre_setup_production:
+pre_setup_development:
   stage: pre-setup
   image:
     name: amazon/aws-cli:2.0.7
@@ -118,7 +118,7 @@ markdown_lint:
   script:
     - mdl --style all --warnings .
 
-validate_production:
+validate_development:
   stage: validate
   <<: *terraform_init_template
   script:
@@ -130,19 +130,19 @@ validate_production:
 
 
 ##################################
-# production environment - start #
+# development environment - start #
 ##################################
 
-plan_production:
+plan_development:
   environment:
-    name: production
+    name: development
   <<: *plan_template
 
-apply_production:
+apply_development:
   environment:
-    name: production
+    name: development
   <<: *apply_template
 
 ################################
-# production environment - end #
+# development environment - end #
 ################################
