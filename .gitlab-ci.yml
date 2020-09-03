@@ -158,6 +158,7 @@ pages:
       - env
   script:
     - python components.py
+    - mkdir -p public
     - cp eks_cluster.png public/
     - cp index.html public/
   artifacts:
