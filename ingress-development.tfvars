@@ -1,4 +1,4 @@
-dns_base_domain               = "example.com"
+dns_base_domain               = "eks.singh.cl"
 ingress_gateway_chart_name    = "nginx-ingress"
 ingress_gateway_chart_repo    = "https://helm.nginx.com/stable"
 ingress_gateway_chart_version = "0.5.2"
