@@ -15,6 +15,7 @@ stages:
   - pre-setup
   - code-quality
   - validate
+  - document
   - build
   - deploy
   - flush
@@ -148,6 +149,20 @@ validate_development:
   <<: *terraform_init_template
   script:
     - terraform validate
+
+pages:
+  stage: document
+  image:
+    name: mjdk/diagrams:latest
+    entrypoint:
+      - env
+  script:
+    - python components.py
+    - cp eks_cluster.png public/
+    - cp index.html public/
+  artifacts:
+    paths:
+      - public
 
 #####################
 # common jobs - end #

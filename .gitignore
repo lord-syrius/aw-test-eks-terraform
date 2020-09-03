@@ -4,3 +4,4 @@ terraform-log*
 .DS_Store
 getter*/
 kubeconfig*
+*.png
