@@ -58,6 +58,16 @@ locals {
       groups   = ["${var.name_prefix}-developers"]
     }
   ]
+  worker_groups_launch_template = [
+    {
+      override_instance_types = var.asg_instance_types
+      asg_desired_capacity    = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      asg_min_size            = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      asg_max_size            = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot" # use Spot EC2 instances to save some money and scale more
+      public_ip               = true
+    },
+  ]
 }
 
 # create EKS cluster
@@ -71,16 +81,7 @@ module "eks-cluster" {
   subnets = module.vpc.private_subnets
   vpc_id  = module.vpc.vpc_id
 
-  worker_groups_launch_template = [
-    {
-      override_instance_types = var.asg_instance_types
-      asg_desired_capacity    = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      asg_min_size            = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      asg_max_size            = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot" # use Spot EC2 instances to save some money and scale more
-      public_ip               = true
-    },
-  ]
+  worker_groups_launch_template = local.worker_groups_launch_template
 
   # map developer & admin ARNs as kubernetes Users
   map_users = concat(local.admin_user_map_users, local.developer_user_map_users)
@@ -122,18 +123,11 @@ resource "helm_release" "spot_termination_handler" {
   namespace  = var.spot_termination_handler_chart_namespace
 }
 
-# locals {
-#   asg_names = toset(module.eks-cluster.workers_asg_names)
-# }
-
 # add spot fleet Autoscaling policy
 resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
-  count = length(module.eks-cluster.workers_asg_names)
-  # for_each = local.asg_names
+  count = length(local.worker_groups_launch_template)
 
-  # name = "${each.key}-autoscaling-policy"
-  name = "${count.index}-autoscaling-policy"
-  # autoscaling_group_name = each.key
+  name                   = "${module.eks-cluster.workers_asg_names[count.index]}-autoscaling-policy"
   autoscaling_group_name = module.eks-cluster.workers_asg_names[count.index]
   policy_type            = "TargetTrackingScaling"
 
@@ -143,6 +137,4 @@ resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
     }
     target_value = var.autoscaling_average_cpu
   }
-
-  depends_on = [module.eks-cluster]
 }
