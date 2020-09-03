@@ -122,16 +122,18 @@ resource "helm_release" "spot_termination_handler" {
   namespace  = var.spot_termination_handler_chart_namespace
 }
 
-locals {
-  asg_names = toset(module.eks-cluster.workers_asg_names)
-}
+# locals {
+#   asg_names = toset(module.eks-cluster.workers_asg_names)
+# }
 
 # add spot fleet Autoscaling policy
 resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
-  for_each = local.asg_names
+  count = length(module.eks-cluster.workers_asg_names)
+  # for_each = local.asg_names
 
   name                   = "${each.key}-autoscaling-policy"
-  autoscaling_group_name = each.key
+  # autoscaling_group_name = each.key
+  autoscaling_group_name = module.eks-cluster.workers_asg_names[count.index]
   policy_type            = "TargetTrackingScaling"
 
   target_tracking_configuration {
