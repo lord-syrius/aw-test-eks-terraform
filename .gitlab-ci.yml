@@ -1,0 +1,149 @@
+---
+#################################################
+# Requirements:                                 #
+#   define the following secrets:               #
+#     AWS_DEFAULT_REGION                        #
+#     AWS_ACCESS_KEY_ID                         #
+#     AWS_SECRET_ACCESS_KEY                     #
+#################################################
+
+#############################
+# global definitions - init #
+#############################
+
+stages:
+  - pre-setup
+  - code-quality
+  - validate
+  - build
+  - deploy
+
+image:
+  name: hashicorp/terraform:0.12.24
+  entrypoint:
+    - env
+
+############################
+# global definitions - end #
+############################
+
+
+########################
+# job templates - init #
+########################
+
+.terraform_init_template: &terraform_init_template
+  before_script:
+    - terraform init -input=false
+      -backend-config=config-backend/backend.tfvars
+
+.plan_template: &plan_template
+  stage: build
+  <<: *terraform_init_template
+  script:
+    - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
+      terraform workspace new ${CI_ENVIRONMENT_NAME})
+    - terraform plan -out=$CI_ENVIRONMENT_NAME-plan.tfplan
+      -var-file=config-variables/${CI_ENVIRONMENT_NAME}/variables.tfvars
+      -input=false
+  artifacts:
+    paths:
+      - $CI_ENVIRONMENT_NAME-plan.tfplan
+
+.apply_template: &apply_template
+  stage: deploy
+  when: manual
+  <<: *terraform_init_template
+  script:
+    - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
+      terraform workspace new ${CI_ENVIRONMENT_NAME})
+    - terraform apply -input=false $CI_ENVIRONMENT_NAME-plan.tfplan
+
+#######################
+# job templates - end #
+#######################
+
+
+#######################
+# common jobs - start #
+#######################
+
+pre_setup_production:
+  stage: pre-setup
+  image:
+    name: amazon/aws-cli:2.0.7
+    entrypoint:
+      - env
+  variables:
+    BUCKET_NAME: my-vibrant-and-nifty-app-infra
+  script:
+    - aws s3 ls s3://${BUCKET_NAME} ||
+      (aws s3 mb s3://${BUCKET_NAME} --region ${AWS_DEFAULT_REGION}
+        && aws s3api put-bucket-versioning --bucket ${BUCKET_NAME}
+        --versioning-configuration Status=Enabled)
+
+terraform_lint:
+  stage: code-quality
+  tags:
+    - linux
+  image:
+    name: wata727/tflint:0.15.5
+    entrypoint:
+      - env
+  script:
+    - tflint
+
+terraform_fmt:
+  stage: code-quality
+  tags:
+    - linux
+  script:
+    - terraform fmt -check
+
+yaml_lint:
+  stage: code-quality
+  tags:
+    - linux
+  image:
+    name: cytopia/yamllint:1.20
+    entrypoint:
+      - env
+  script:
+    - yamllint .
+
+markdown_lint:
+  stage: code-quality
+  tags:
+    - linux
+  image: pipelinecomponents/markdownlint:6ff4ccf
+  script:
+    - mdl --style all --warnings .
+
+validate_production:
+  stage: validate
+  <<: *terraform_init_template
+  script:
+    - terraform validate
+
+#####################
+# common jobs - end #
+#####################
+
+
+##################################
+# production environment - start #
+##################################
+
+plan_production:
+  environment:
+    name: production
+  <<: *plan_template
+
+apply_production:
+  environment:
+    name: production
+  <<: *apply_template
+
+################################
+# production environment - end #
+################################
