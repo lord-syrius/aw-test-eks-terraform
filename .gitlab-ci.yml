@@ -17,6 +17,7 @@ stages:
   - validate
   - build
   - deploy
+  - flush
 
 image:
   name: hashicorp/terraform:0.12.24
@@ -52,12 +53,23 @@ image:
 
 .apply_template: &apply_template
   stage: deploy
-  when: manual
   <<: *terraform_init_template
   script:
     - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
       terraform workspace new ${CI_ENVIRONMENT_NAME})
     - terraform apply -input=false $CI_ENVIRONMENT_NAME-plan.tfplan
+
+.destroy_template: &destroy_template
+  stage: flush
+  when: manual
+  <<: *terraform_init_template
+  script:
+    - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
+      terraform workspace new ${CI_ENVIRONMENT_NAME})
+    - terraform destroy
+      -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -auto-approve
 
 #######################
 # job templates - end #
@@ -143,6 +155,11 @@ apply_development:
   environment:
     name: development
   <<: *apply_template
+
+destroy_development:
+  environment:
+    name: development
+  <<: *destroy_template
 
 ################################
 # development environment - end #
