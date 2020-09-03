@@ -47,6 +47,7 @@ image:
       -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
       -var-file=eks-${CI_ENVIRONMENT_NAME}.tfvars
       -var-file=ingress-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=subdomains-${CI_ENVIRONMENT_NAME}.tfvars
       -input=false
   artifacts:
     paths:
@@ -77,6 +78,7 @@ image:
       -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
       -var-file=eks-${CI_ENVIRONMENT_NAME}.tfvars
       -var-file=ingress-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=subdomains-${CI_ENVIRONMENT_NAME}.tfvars
       -auto-approve
 
 #######################
