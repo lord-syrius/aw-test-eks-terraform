@@ -131,7 +131,7 @@ resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
   count = length(module.eks-cluster.workers_asg_names)
   # for_each = local.asg_names
 
-  name                   = "${each.key}-autoscaling-policy"
+  name = "${each.key}-autoscaling-policy"
   # autoscaling_group_name = each.key
   autoscaling_group_name = module.eks-cluster.workers_asg_names[count.index]
   policy_type            = "TargetTrackingScaling"
