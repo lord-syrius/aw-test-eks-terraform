@@ -137,5 +137,5 @@ resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
     target_value = var.autoscaling_average_cpu
   }
 
-  depends_on = [module.eks-cluster]
+  depends_on = [module.eks-cluster.workers_asg_names]
 }
