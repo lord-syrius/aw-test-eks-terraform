@@ -44,6 +44,7 @@ image:
       terraform workspace new ${CI_ENVIRONMENT_NAME})
     - terraform plan -out=$CI_ENVIRONMENT_NAME-plan.tfplan
       -var-file=network-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=eks-${CI_ENVIRONMENT_NAME}.tfvars
       -input=false
   artifacts:
     paths:
