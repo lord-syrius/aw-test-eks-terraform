@@ -34,8 +34,7 @@ image:
 
 .terraform_init_template: &terraform_init_template
   before_script:
-    - terraform init -input=false
-      -backend-config=config-backend/backend.tfvars
+    - terraform init -input=false -backend-config=backend.tfvars
 
 .plan_template: &plan_template
   stage: build
