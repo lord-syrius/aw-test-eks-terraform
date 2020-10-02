@@ -76,6 +76,8 @@ data "kubernetes_service" "ingress_gateway" {
   metadata {
     name = join("-", [helm_release.ingress_gateway.chart, helm_release.ingress_gateway.name])
   }
+
+  depends_on = [module.eks-cluster]
 }
 data "aws_elb_hosted_zone_id" "elb_zone_id" {}
 resource "aws_route53_record" "eks_domain" {
