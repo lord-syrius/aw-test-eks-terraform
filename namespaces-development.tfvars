@@ -1,1 +1,1 @@
-namespaces = ["sample-apps"]
+# namespaces = ["sample-apps"]

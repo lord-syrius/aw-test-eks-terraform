@@ -1,4 +1,4 @@
-bucket               = "nicosingh-infra-03oct20"
-key                  = "tf-state.json"
+bucket               = "my-vibrant-and-nifty-app-infra"
+key                  = "base-infra.json"
 region               = "us-west-2"
 workspace_key_prefix = "environment"

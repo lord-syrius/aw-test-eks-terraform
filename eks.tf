@@ -58,77 +58,50 @@ locals {
       groups   = ["${var.name_prefix}-developers"]
     }
   ]
-  worker_groups_launch_template = [
-    {
-      override_instance_types = var.asg_instance_types
-      asg_desired_capacity    = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      asg_min_size            = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      asg_max_size            = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot" # use Spot EC2 instances to save some money and scale more
-      public_ip               = true
-    },
-  ]
 }
 
 # create EKS cluster
 module "eks-cluster" {
-  source           = "terraform-aws-modules/eks/aws"
-  version          = "12.1.0"
-  cluster_name     = "${var.cluster_name}"
-  cluster_version  = "1.16"
-  write_kubeconfig = false
+  source          = "terraform-aws-modules/eks/aws"
+  version         = "~> 18.19.0"
+  cluster_name    = var.cluster_name
+  cluster_version = "1.22"
 
-  subnets = module.vpc.private_subnets
-  vpc_id  = module.vpc.vpc_id
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
 
-  worker_groups_launch_template = local.worker_groups_launch_template
+  subnet_ids = module.vpc.private_subnets
+  vpc_id     = module.vpc.vpc_id
 
-  # map developer & admin ARNs as kubernetes Users
-  map_users = concat(local.admin_user_map_users, local.developer_user_map_users)
-}
-
-# get EKS cluster info to configure Kubernetes and Helm providers
-data "aws_eks_cluster" "cluster" {
-  name = module.eks-cluster.cluster_id
-}
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks-cluster.cluster_id
-}
-
-# get EKS authentication for being able to manage k8s objects from terraform
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
-  version                = "~> 1.9"
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
-    load_config_file       = false
+  eks_managed_node_groups = {
+    eks = {
+      min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      instance_types = var.asg_instance_types
+      capacity_type  = "SPOT"
+      network_interfaces = [{
+        delete_on_termination = true
+      }]
+    }
   }
-  version = "~> 1.2"
 }
 
-# deploy spot termination handler
-resource "helm_release" "spot_termination_handler" {
-  name       = var.spot_termination_handler_chart_name
-  chart      = var.spot_termination_handler_chart_name
-  repository = var.spot_termination_handler_chart_repo
-  version    = var.spot_termination_handler_chart_version
-  namespace  = var.spot_termination_handler_chart_namespace
-}
+# # map developer & admin ARNs as kubernetes Users
+# module "eks-cluster-auth" {
+#   source  = "aidanmelen/eks-auth/aws"
+#   version = "~> 0.9.0"
+#
+#   eks       = module.eks-cluster
+#   map_users = concat(local.admin_user_map_users, local.developer_user_map_users)
+# }
 
 # add spot fleet Autoscaling policy
 resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
-  count = length(local.worker_groups_launch_template)
+  count = length(module.eks-cluster.eks_managed_node_groups_autoscaling_group_names)
 
-  name                   = "${module.eks-cluster.workers_asg_names[count.index]}-autoscaling-policy"
-  autoscaling_group_name = module.eks-cluster.workers_asg_names[count.index]
+  name                   = "${module.eks-cluster.eks_managed_node_groups_autoscaling_group_names[count.index]}-autoscaling-policy"
+  autoscaling_group_name = module.eks-cluster.eks_managed_node_groups_autoscaling_group_names[count.index]
   policy_type            = "TargetTrackingScaling"
 
   target_tracking_configuration {
@@ -138,3 +111,40 @@ resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
     target_value = var.autoscaling_average_cpu
   }
 }
+
+# # get EKS cluster info to configure Kubernetes and Helm providers
+# data "aws_eks_cluster" "cluster" {
+#   name = module.eks-cluster.cluster_id
+# }
+# data "aws_eks_cluster_auth" "cluster" {
+#   name = module.eks-cluster.cluster_id
+# }
+#
+# # get EKS authentication for being able to manage k8s objects from terraform
+# provider "kubernetes" {
+#   host                   = data.aws_eks_cluster.cluster.endpoint
+#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+#   token                  = data.aws_eks_cluster_auth.cluster.token
+#   load_config_file       = false
+#   version                = "~> 1.9"
+# }
+#
+# provider "helm" {
+#   kubernetes {
+#     host                   = data.aws_eks_cluster.cluster.endpoint
+#     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+#     token                  = data.aws_eks_cluster_auth.cluster.token
+#     load_config_file       = false
+#   }
+#   version = "~> 1.2"
+# }
+#
+# # deploy spot termination handler
+# resource "helm_release" "spot_termination_handler" {
+#   name       = var.spot_termination_handler_chart_name
+#   chart      = var.spot_termination_handler_chart_name
+#   repository = var.spot_termination_handler_chart_repo
+#   version    = var.spot_termination_handler_chart_version
+#   namespace  = var.spot_termination_handler_chart_namespace
+# }
+#

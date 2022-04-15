@@ -5,3 +5,4 @@ terraform-log*
 getter*/
 kubeconfig*
 *.png
+.*hcl
