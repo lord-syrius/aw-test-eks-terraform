@@ -7,12 +7,11 @@ terraform {
     aws = {
       version = "~> 4.9.0"
     }
-    random = {
-      version = "~> 3.1.2"
+    kubernetes = {
+      version = "~> 2.10.0"
     }
-    http = {
-      source  = "terraform-aws-modules/http"
-      version = "~> 2.4.1"
+    helm = {
+      version = "~> 2.5.1"
     }
   }
 }
