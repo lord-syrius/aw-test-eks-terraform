@@ -1,5 +1,3 @@
-# TODO remove unused variables
-
 # create some variables
 variable "admin_users" {
   type        = list(string)
@@ -44,23 +42,8 @@ locals {
       groups   = ["${var.name_prefix}-developers"]
     }
   ]
-}
-
-# create EKS cluster
-module "eks-cluster" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = "~> 18.19.0"
-  cluster_name    = var.cluster_name
-  cluster_version = "1.22"
-
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
-
-  subnet_ids = module.vpc.private_subnets
-  vpc_id     = module.vpc.vpc_id
-
-  eks_managed_node_groups = {
-    eks = {
+  eks_node_groups = {
+    my_managed_group = {
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
@@ -73,18 +56,24 @@ module "eks-cluster" {
   }
 }
 
-# # map developer & admin ARNs as kubernetes Users
-# module "eks-cluster-auth" {
-#   source  = "aidanmelen/eks-auth/aws"
-#   version = "~> 0.9.0"
-#
-#   eks       = module.eks-cluster
-#   map_users = concat(local.admin_user_map_users, local.developer_user_map_users)
-# }
+# create EKS cluster
+module "eks-cluster" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 18.20.2"
+
+  cluster_name                    = var.cluster_name
+  cluster_version                 = "1.22"
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+  subnet_ids                      = module.vpc.private_subnets
+  vpc_id                          = module.vpc.vpc_id
+  aws_auth_users                  = concat(local.admin_user_map_users, local.developer_user_map_users)
+  eks_managed_node_groups         = local.eks_node_groups
+}
 
 # add spot fleet Autoscaling policy
 resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
-  count = length(module.eks-cluster.eks_managed_node_groups_autoscaling_group_names)
+  count = length(local.eks_node_groups)
 
   name                   = "${module.eks-cluster.eks_managed_node_groups_autoscaling_group_names[count.index]}-autoscaling-policy"
   autoscaling_group_name = module.eks-cluster.eks_managed_node_groups_autoscaling_group_names[count.index]
