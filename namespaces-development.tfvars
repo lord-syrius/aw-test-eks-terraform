@@ -1,1 +1,0 @@
-# namespaces = ["sample-apps"]
