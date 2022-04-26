@@ -2,7 +2,7 @@ from diagrams import Cluster, Diagram
 from diagrams.aws.network import VPC
 from diagrams.aws.network import PrivateSubnet
 from diagrams.aws.network import PublicSubnet
-from diagrams.aws.network import ELB
+from diagrams.aws.network import ALB
 from diagrams.aws.network import NATGateway
 from diagrams.aws.security import ACM
 from diagrams.aws.network import Route53
@@ -18,7 +18,7 @@ from diagrams.aws.storage import S3
 with Diagram("EKS Cluster", show=False, direction="LR"):
     ssl_certificate = ACM("SSL cert")
     dns_name = Route53("DNS domain")
-    load_balancer = ELB("Load balancer")
+    load_balancer = ALB("Load balancer")
     with Cluster("Custom VPC"):
         with Cluster("Public network"):
             public_subnets = [
@@ -43,9 +43,11 @@ with Diagram("EKS Cluster", show=False, direction="LR"):
                     EC2("K8s worker zone c"),
                     EC2("K8s worker zone d"),
                 ]
-                ingress = Ingress("Ingress gateway")
-                services = Service("Services")
-                pods = Pod("Container pods")
+                ingress = Service("Ingress gateway")
+                ingress_app = Ingress("Application Ingress")
+                services = Service("Application Services")
+                pods = Pod("Application pods")
+                external_dns = Service("External DNS")
 
     ci_pipeline = GitlabCI("CI pipeline")
     terraform_repo = Terraform("Infra as code")
@@ -59,7 +61,11 @@ with Diagram("EKS Cluster", show=False, direction="LR"):
     private_subnets - autoscaling_group
     autoscaling_group - autoscaling_group_instances
     autoscaling_group_instances - ingress
-    ingress - services
+    ingress - ingress_app
+    ingress_app - services
     services - pods
+    ingress - external_dns
+    external_dns - dns_name
+    ingress - load_balancer
     ci_pipeline - terraform_repo
     terraform_repo - remote_state
