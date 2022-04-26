@@ -44,10 +44,15 @@ with Diagram("EKS Cluster", show=False, direction="LR"):
                     EC2("K8s worker zone d"),
                 ]
                 ingress = Service("Ingress gateway")
-                ingress_app = Ingress("Application Ingress")
-                services = Service("Application Services")
-                pods = Pod("Application pods")
                 external_dns = Service("External DNS")
+                with Cluster("Application One"):
+                    ingress_app = Ingress("Application Ingress")
+                    services = Service("Application Services")
+                    pods = Pod("Application pods")
+                with Cluster("Application Two"):
+                    ingress_app_2 = Ingress("Application Ingress")
+                    services_2= Service("Application Services")
+                    pods_2 = Pod("Application pods")
 
     ci_pipeline = GitlabCI("CI pipeline")
     terraform_repo = Terraform("Infra as code")
@@ -64,7 +69,11 @@ with Diagram("EKS Cluster", show=False, direction="LR"):
     ingress - ingress_app
     ingress_app - services
     services - pods
-    ingress - external_dns
+    ingress - ingress_app_2
+    ingress_app_2 - services_2
+    services_2 - pods_2
+    ingress_app - external_dns
+    ingress_app_2 - external_dns
     external_dns - dns_name
     ingress - load_balancer
     ci_pipeline - terraform_repo
