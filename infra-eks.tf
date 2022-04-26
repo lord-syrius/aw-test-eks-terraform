@@ -57,6 +57,7 @@ module "cluster" {
   }
 }
 
+# create IAM role for AWS Load Balancer Controller, and attach to EKS OIDC
 module "eks-ingress-iam" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 4.22.0"
@@ -72,6 +73,7 @@ module "eks-ingress-iam" {
   }
 }
 
+# create IAM role for External DNS, and attach to EKS OIDC
 module "eks-external-dns-iam" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 4.22.0"
@@ -88,7 +90,7 @@ module "eks-external-dns-iam" {
   }
 }
 
-# add spot fleet Autoscaling policy
+# set spot fleet Autoscaling policy
 resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
   count = length(local.eks_node_groups)
 

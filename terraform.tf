@@ -1,11 +1,11 @@
 terraform {
-  required_version = "~> 1.1.9" # which means ">= 1.1.9" and "< 1.2"
+  required_version = "1.1.9"
 
   backend "s3" {}
 
   required_providers {
     aws = {
-      version = "~> 4.9.0"
+      version = "~> 4.9.0" # which means ">= 4.9.0" and "< 4.10"
     }
     kubernetes = {
       version = "~> 2.10.0"
