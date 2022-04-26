@@ -58,7 +58,7 @@ module "cluster" {
 }
 
 # create IAM role for AWS Load Balancer Controller, and attach to EKS OIDC
-module "eks-ingress-iam" {
+module "eks_ingress_iam" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 4.22.0"
 
@@ -74,7 +74,7 @@ module "eks-ingress-iam" {
 }
 
 # create IAM role for External DNS, and attach to EKS OIDC
-module "eks-external-dns-iam" {
+module "eks_external_dns_iam" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 4.22.0"
 
