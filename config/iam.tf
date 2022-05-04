@@ -50,6 +50,8 @@ resource "kubernetes_config_map_v1_data" "aws_auth_users" {
   }
 
   force = true
+
+  depends_on = [time_sleep.wait]
 }
 
 # create developers Role using RBAC
