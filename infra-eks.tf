@@ -65,13 +65,20 @@ module "cluster" {
     }
     # allow connections from EKS to the internet
     egress_all = {
-      description      = "Node all egress"
       protocol         = "-1"
       from_port        = 0
       to_port          = 0
       type             = "egress"
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
+    }
+    # allow connections from EKS to EKS (internal DNS)
+    ingress_self_all = {
+      protocol  = "-1"
+      from_port = 0
+      to_port   = 0
+      type      = "ingress"
+      self      = true
     }
   }
 }
