@@ -55,6 +55,14 @@ module "cluster" {
       to_port                       = 9443
       source_cluster_security_group = true
     }
+    # allow connections from ALB security group
+    ingress_allow_access_from_alb_sg = {
+      type                     = "ingress"
+      protocol                 = "-1"
+      from_port                = 0
+      to_port                  = 0
+      source_security_group_id = aws_security_group.alb.id
+    }
     # allow connections from EKS to the internet
     egress_all = {
       description      = "Node all egress"

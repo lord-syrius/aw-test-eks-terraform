@@ -90,3 +90,27 @@ module "vpc" {
     iac_environment                             = var.iac_environment_tag
   }
 }
+
+# create security group to be used later by the ingress ALB
+resource "aws_security_group" "alb" {
+  name   = "${var.name_prefix}-alb"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    description      = "http"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "https"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
