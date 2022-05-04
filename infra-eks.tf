@@ -26,7 +26,8 @@ locals {
       instance_types = var.asg_instance_types
       capacity_type  = "SPOT"
       network_interfaces = [{
-        delete_on_termination = true
+        delete_on_termination       = true
+        associate_public_ip_address = true
       }]
     }
   }
@@ -53,6 +54,16 @@ module "cluster" {
       from_port                     = 9443
       to_port                       = 9443
       source_cluster_security_group = true
+    }
+    # allow connections from EKS to the internet
+    egress_all = {
+      description      = "Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
     }
   }
 }
