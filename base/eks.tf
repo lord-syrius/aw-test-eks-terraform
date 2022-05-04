@@ -72,7 +72,7 @@ module "cluster" {
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
     }
-    # allow connections from EKS to EKS (internal DNS)
+    # allow connections from EKS to EKS (internal calls)
     ingress_self_all = {
       protocol  = "-1"
       from_port = 0
