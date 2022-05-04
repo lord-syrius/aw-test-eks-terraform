@@ -36,7 +36,7 @@ image:
 
 .terraform_init_template: &terraform_init_template
   before_script:
-    - terraform init -input=false -backend-config=infra-backend.tfvars
+    - terraform init -input=false -backend-config=backend.tfvars
 
 .plan_template: &plan_template
   stage: build
@@ -45,8 +45,13 @@ image:
     - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
       terraform workspace new ${CI_ENVIRONMENT_NAME})
     - terraform plan -out=$CI_ENVIRONMENT_NAME-plan.tfplan
-      -var-file=infra-network-${CI_ENVIRONMENT_NAME}.tfvars
-      -var-file=infra-eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=base-network-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=base-eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-ingress-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-external-dns-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-namespaces-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-iam-${CI_ENVIRONMENT_NAME}.tfvars
       -input=false
   artifacts:
     paths:
@@ -74,8 +79,13 @@ image:
     - (terraform workspace select ${CI_ENVIRONMENT_NAME} ||
       terraform workspace new ${CI_ENVIRONMENT_NAME})
     - terraform destroy
-      -var-file=infra-network-${CI_ENVIRONMENT_NAME}.tfvars
-      -var-file=infra-eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=base-network-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=base-eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-eks-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-ingress-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-external-dns-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-namespaces-${CI_ENVIRONMENT_NAME}.tfvars
+      -var-file=config-iam-${CI_ENVIRONMENT_NAME}.tfvars
       -auto-approve
 
 #######################
