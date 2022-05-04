@@ -36,7 +36,7 @@ locals {
 resource "time_sleep" "wait" {
   create_duration = "180s"
   triggers = {
-    cluster_name = data.aws_eks_cluster.cluster.endpoint
+    cluster_endpoint = data.aws_eks_cluster.cluster.endpoint
   }
 }
 resource "kubernetes_config_map_v1_data" "aws_auth_users" {
