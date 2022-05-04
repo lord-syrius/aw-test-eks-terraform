@@ -19,7 +19,7 @@ variable "autoscaling_average_cpu" {
 locals {
   # create single EKS node group
   eks_node_groups = {
-    var.cluster_name = {
+    "${var.cluster_name}" = {
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
