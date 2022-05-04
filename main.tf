@@ -3,7 +3,6 @@ module "base" {
   source = "./base/"
 
   cluster_name                   = var.cluster_name
-  iac_environment_tag            = var.iac_environment_tag
   name_prefix                    = var.name_prefix
   main_network_block             = var.main_network_block
   subnet_prefix_extension        = var.subnet_prefix_extension
@@ -23,7 +22,6 @@ module "config" {
   spot_termination_handler_chart_version   = var.spot_termination_handler_chart_version
   spot_termination_handler_chart_namespace = var.spot_termination_handler_chart_namespace
   dns_base_domain                          = var.dns_base_domain
-  iac_environment_tag                      = var.iac_environment_tag
   ingress_gateway_name                     = var.ingress_gateway_name
   ingress_gateway_iam_role                 = var.ingress_gateway_iam_role
   ingress_gateway_chart_name               = var.ingress_gateway_chart_name

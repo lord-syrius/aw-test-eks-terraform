@@ -3,10 +3,6 @@ variable "cluster_name" {
   type        = string
   description = "EKS cluster name."
 }
-variable "iac_environment_tag" {
-  type        = string
-  description = "AWS tag to indicate environment name of each infrastructure object."
-}
 variable "name_prefix" {
   type        = string
   description = "Prefix to be used on each infrastructure object Name created in AWS."
@@ -34,8 +30,7 @@ resource "aws_eip" "nat_gw_elastic_ip" {
   vpc = true
 
   tags = {
-    Name            = "${var.cluster_name}-nat-eip"
-    iac_environment = var.iac_environment_tag
+    Name = "${var.cluster_name}-nat-eip"
   }
 }
 
@@ -77,17 +72,14 @@ module "vpc" {
   # add VPC/Subnet tags required by EKS
   tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
-    iac_environment                             = var.iac_environment_tag
   }
   public_subnet_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                    = "1"
-    iac_environment                             = var.iac_environment_tag
   }
   private_subnet_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"           = "1"
-    iac_environment                             = var.iac_environment_tag
   }
 }
 

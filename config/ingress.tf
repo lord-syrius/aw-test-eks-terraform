@@ -3,10 +3,6 @@ variable "dns_base_domain" {
   type        = string
   description = "DNS Zone name to be used from EKS Ingress."
 }
-variable "iac_environment_tag" {
-  type        = string
-  description = "AWS tag to indicate environment name of each infrastructure object."
-}
 variable "ingress_gateway_name" {
   type        = string
   description = "Load-balancer service name."
@@ -41,8 +37,7 @@ resource "aws_acm_certificate" "eks_domain_cert" {
   validation_method         = "DNS"
 
   tags = {
-    Name            = "${var.dns_base_domain}"
-    iac_environment = var.iac_environment_tag
+    Name = "${var.dns_base_domain}"
   }
 }
 resource "aws_route53_record" "eks_domain_cert_validation_dns" {
