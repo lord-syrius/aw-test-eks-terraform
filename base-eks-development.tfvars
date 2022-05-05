@@ -1,6 +1,6 @@
 autoscaling_average_cpu = 30
 eks_managed_node_groups = {
-  "x86" = {
+  "my-app-eks-x86" = {
     ami_type     = "AL2_x86_64"
     min_size     = 1
     max_size     = 16
@@ -19,7 +19,7 @@ eks_managed_node_groups = {
       associate_public_ip_address = true
     }]
   }
-  "arm" = {
+  "my-app-eks-arm" = {
     ami_type     = "AL2_ARM_64"
     min_size     = 1
     max_size     = 16
