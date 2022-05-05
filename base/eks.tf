@@ -20,6 +20,7 @@ locals {
   # create single EKS node group
   eks_node_groups = {
     "${var.cluster_name}-x86" = {
+      ami_type       = "AL2_x86_64"
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
@@ -31,6 +32,7 @@ locals {
       }]
     }
     "${var.cluster_name}-arm" = {
+      ami_type       = "AL2_ARM_64"
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
