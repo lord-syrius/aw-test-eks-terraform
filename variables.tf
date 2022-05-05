@@ -23,21 +23,9 @@ variable "zone_offset" {
   type        = number
   description = "CIDR block bits extension offset to calculate Public subnets, avoiding collisions with Private subnets."
 }
-variable "asg_instance_types_x86" {
-  type        = list(string)
-  description = "List of x86 EC2 instance machine types to be used in EKS."
-}
-variable "asg_instance_types_arm" {
-  type        = list(string)
-  description = "List of ARM EC2 instance machine types to be used in EKS."
-}
-variable "autoscaling_minimum_size_by_az" {
-  type        = number
-  description = "Minimum number of EC2 instances to autoscale our EKS cluster on each AZ."
-}
-variable "autoscaling_maximum_size_by_az" {
-  type        = number
-  description = "Maximum number of EC2 instances to autoscale our EKS cluster on each AZ."
+variable "eks_managed_node_groups" {
+  type        = map(any)
+  description = "TODO"
 }
 variable "autoscaling_average_cpu" {
   type        = number

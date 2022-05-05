@@ -1,53 +1,11 @@
 # create some variables
-variable "asg_instance_types_x86" {
-  type        = list(string)
-  description = "List of x86 EC2 instance machine types to be used in EKS."
-}
-variable "asg_instance_types_arm" {
-  type        = list(string)
-  description = "List of ARM EC2 instance machine types to be used in EKS."
-}
-variable "autoscaling_minimum_size_by_az" {
-  type        = number
-  description = "Minimum number of EC2 instances to autoscale our EKS cluster on each AZ."
-}
-variable "autoscaling_maximum_size_by_az" {
-  type        = number
-  description = "Maximum number of EC2 instances to autoscale our EKS cluster on each AZ."
+variable "eks_managed_node_groups" {
+  type        = map(any)
+  description = "TODO"
 }
 variable "autoscaling_average_cpu" {
   type        = number
   description = "Average CPU threshold to autoscale EKS EC2 instances."
-}
-
-locals {
-  # create single EKS node group
-  eks_node_groups = {
-    "${var.cluster_name}-x86" = {
-      ami_type       = "AL2_x86_64"
-      min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      instance_types = var.asg_instance_types_x86
-      capacity_type  = "SPOT"
-      network_interfaces = [{
-        delete_on_termination       = true
-        associate_public_ip_address = true
-      }]
-    }
-    "${var.cluster_name}-arm" = {
-      ami_type       = "AL2_ARM_64"
-      min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      instance_types = var.asg_instance_types_arm
-      capacity_type  = "SPOT"
-      network_interfaces = [{
-        delete_on_termination       = true
-        associate_public_ip_address = true
-      }]
-    }
-  }
 }
 
 # create EKS cluster
@@ -61,7 +19,7 @@ module "cluster" {
   cluster_endpoint_public_access  = true
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
-  eks_managed_node_groups         = local.eks_node_groups
+  eks_managed_node_groups         = var.eks_managed_node_groups
 
   node_security_group_additional_rules = {
     # https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2039#issuecomment-1099032289
@@ -135,7 +93,7 @@ module "eks_external_dns_iam" {
 
 # set spot fleet Autoscaling policy
 resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
-  count = length(local.eks_node_groups)
+  count = length(var.eks_managed_node_groups)
 
   name                   = "${module.cluster.eks_managed_node_groups_autoscaling_group_names[count.index]}-autoscaling-policy"
   autoscaling_group_name = module.cluster.eks_managed_node_groups_autoscaling_group_names[count.index]
