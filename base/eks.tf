@@ -19,11 +19,22 @@ variable "autoscaling_average_cpu" {
 locals {
   # create single EKS node group
   eks_node_groups = {
-    "${var.cluster_name}" = {
+    "${var.cluster_name}-x86" = {
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       instance_types = var.asg_instance_types
+      capacity_type  = "SPOT"
+      network_interfaces = [{
+        delete_on_termination       = true
+        associate_public_ip_address = true
+      }]
+    }
+    "${var.cluster_name}-arm" = {
+      min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
+      instance_types = ["c6g.medium","c6g.large"]
       capacity_type  = "SPOT"
       network_interfaces = [{
         delete_on_termination       = true

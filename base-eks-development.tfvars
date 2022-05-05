@@ -4,9 +4,7 @@ asg_instance_types = [
   "t3.large",
   "t3a.small",
   "t3a.medium",
-  "t3a.large",
-  "c6g.medium",
-  "c6g.large"
+  "t3a.large"
 ]
 autoscaling_minimum_size_by_az = 1
 autoscaling_maximum_size_by_az = 10
