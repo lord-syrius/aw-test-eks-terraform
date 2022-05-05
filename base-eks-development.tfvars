@@ -25,10 +25,11 @@ eks_managed_node_groups = {
     max_size     = 16
     desired_size = 1
     instance_types = [
-      "c6g.medium",
-      "c6g.large"
+      "t4g.small",
+      "t4g.medium",
+      "t4g.large"
     ]
-    capacity_type = "SPOT"
+    capacity_type = "ON_DEMAND"
     network_interfaces = [{
       delete_on_termination       = true
       associate_public_ip_address = true
