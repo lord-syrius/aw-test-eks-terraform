@@ -1,7 +1,11 @@
 # create some variables
-variable "asg_instance_types" {
+variable "asg_instance_types_x86" {
   type        = list(string)
-  description = "List of EC2 instance machine types to be used in EKS."
+  description = "List of x86 EC2 instance machine types to be used in EKS."
+}
+variable "asg_instance_types_arm" {
+  type        = list(string)
+  description = "List of ARM EC2 instance machine types to be used in EKS."
 }
 variable "autoscaling_minimum_size_by_az" {
   type        = number
@@ -24,7 +28,7 @@ locals {
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      instance_types = var.asg_instance_types
+      instance_types = var.asg_instance_types_x86
       capacity_type  = "SPOT"
       network_interfaces = [{
         delete_on_termination       = true
@@ -36,7 +40,7 @@ locals {
       min_size       = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       max_size       = var.autoscaling_maximum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
       desired_size   = var.autoscaling_minimum_size_by_az * length(data.aws_availability_zones.available_azs.zone_ids)
-      instance_types = ["c6g.medium","c6g.large"]
+      instance_types = var.asg_instance_types_arm
       capacity_type  = "SPOT"
       network_interfaces = [{
         delete_on_termination       = true

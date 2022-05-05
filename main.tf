@@ -7,7 +7,8 @@ module "base" {
   main_network_block             = var.main_network_block
   subnet_prefix_extension        = var.subnet_prefix_extension
   zone_offset                    = var.zone_offset
-  asg_instance_types             = var.asg_instance_types
+  asg_instance_types_x86         = var.asg_instance_types_x86
+  asg_instance_types_arm         = var.asg_instance_types_arm
   autoscaling_minimum_size_by_az = var.autoscaling_minimum_size_by_az
   autoscaling_maximum_size_by_az = var.autoscaling_maximum_size_by_az
   autoscaling_average_cpu        = var.autoscaling_average_cpu
