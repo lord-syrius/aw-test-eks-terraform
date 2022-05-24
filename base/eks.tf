@@ -57,6 +57,9 @@ module "cluster" {
     }
   }
 }
+output "cluster_id" {
+  value = module.cluster.cluster_id
+}
 
 # create IAM role for AWS Load Balancer Controller, and attach to EKS OIDC
 module "eks_ingress_iam" {
