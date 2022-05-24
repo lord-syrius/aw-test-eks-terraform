@@ -11,6 +11,7 @@ module "base" {
   autoscaling_average_cpu = var.autoscaling_average_cpu
 }
 
+# provision EKS cluster
 module "config" {
   source = "./config/"
 
