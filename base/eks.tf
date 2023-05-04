@@ -50,7 +50,7 @@ module "cluster" {
   }
 }
 # wait until cluster creation to output their id
-# since aws_eks_cluster.this[0].id is not defined as an output anymore in module
+# since aws_eks_cluster.this[0].id is not defined as output in module anymore :(
 data "aws_eks_cluster" "cluster" {
   name       = var.cluster_name
   depends_on = [module.cluster]
