@@ -11,7 +11,7 @@ variable "autoscaling_average_cpu" {
 # create EKS cluster
 module "cluster" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.20.2"
+  version = "19.13.1"
 
   cluster_name                    = var.cluster_name
   cluster_version                 = "1.26"
@@ -22,14 +22,6 @@ module "cluster" {
   eks_managed_node_groups         = var.eks_managed_node_groups
 
   node_security_group_additional_rules = {
-    # https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2039#issuecomment-1099032289
-    ingress_allow_access_from_control_plane = {
-      type                          = "ingress"
-      protocol                      = "tcp"
-      from_port                     = 9443
-      to_port                       = 9443
-      source_cluster_security_group = true
-    }
     # allow connections from ALB security group
     ingress_allow_access_from_alb_sg = {
       type                     = "ingress"
@@ -57,8 +49,14 @@ module "cluster" {
     }
   }
 }
+# wait until cluster creation to output their id
+# since aws_eks_cluster.this[0].id is not defined as an output anymore in module
+data "aws_eks_cluster" "cluster" {
+  name       = var.cluster_name
+  depends_on = [module.cluster]
+}
 output "cluster_id" {
-  value = module.cluster.cluster_id
+  value = data.aws_eks_cluster.cluster.id
 }
 
 # create IAM role for AWS Load Balancer Controller, and attach to EKS OIDC
