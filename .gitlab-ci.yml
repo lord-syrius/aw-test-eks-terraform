@@ -36,6 +36,7 @@ image:
 
 .terraform_init_template: &terraform_init_template
   before_script:
+    - apk add aws-cli --update
     - terraform init -input=false -backend-config=backend.tfvars
 
 .plan_template: &plan_template
