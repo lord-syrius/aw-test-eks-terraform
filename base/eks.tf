@@ -14,7 +14,7 @@ module "cluster" {
   version = "~> 18.20.2"
 
   cluster_name                    = var.cluster_name
-  cluster_version                 = "1.22"
+  cluster_version                 = "1.26"
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
   subnet_ids                      = module.vpc.private_subnets

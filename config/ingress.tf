@@ -77,6 +77,18 @@ resource "kubernetes_service_account" "load_balancer_controller" {
     }
   }
 }
+resource "kubernetes_secret" "load_balancer_controller" {
+  type                           = "kubernetes.io/service-account-token"
+  wait_for_service_account_token = true
+
+  metadata {
+    namespace     = kubernetes_service_account.load_balancer_controller.metadata.0.namespace
+    generate_name = "${kubernetes_service_account.load_balancer_controller.metadata.0.name}-token"
+    annotations   = {
+      "kubernetes.io/service-account.name" = kubernetes_service_account.load_balancer_controller.metadata.0.name
+    }
+  }
+}
 resource "helm_release" "ingress_gateway" {
   name       = var.ingress_gateway_chart_name
   chart      = var.ingress_gateway_chart_name
