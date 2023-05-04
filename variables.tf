@@ -15,6 +15,10 @@ variable "main_network_block" {
   type        = string
   description = "Base CIDR block to be used in our VPC."
 }
+variable "cluster_azs" {
+  type        = list(string)
+  description = "List of Availability Zones to be used in EKS"
+}
 variable "subnet_prefix_extension" {
   type        = number
   description = "CIDR block bits extension to calculate CIDR blocks of each subnetwork."

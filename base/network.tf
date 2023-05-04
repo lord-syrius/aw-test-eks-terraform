@@ -11,6 +11,10 @@ variable "main_network_block" {
   type        = string
   description = "Base CIDR block to be used in our VPC."
 }
+variable "cluster_azs" {
+  type        = list(string)
+  description = "List of Availability Zones to be used in EKS"
+}
 variable "subnet_prefix_extension" {
   type        = number
   description = "CIDR block bits extension to calculate CIDR blocks of each subnetwork."
@@ -23,6 +27,10 @@ variable "zone_offset" {
 # get all available AZs in our region
 data "aws_availability_zones" "available_azs" {
   state = "available"
+  filter {
+    name   = "zone-name"
+    values = var.cluster_azs
+  }
 }
 
 # reserve Elastic IP to be used in our NAT gateway
@@ -47,7 +55,7 @@ module "vpc" {
     # this loop will create a one-line list as ["10.0.0.0/20", "10.0.16.0/20", "10.0.32.0/20", ...]
     # with a length depending on how many Zones are available
     for zone_id in data.aws_availability_zones.available_azs.zone_ids :
-    cidrsubnet(var.main_network_block, var.subnet_prefix_extension, tonumber(substr(zone_id, length(zone_id) - 1, 1)) - 1)
+    cidrsubnet(var.main_network_block, var.subnet_prefix_extension, index(data.aws_availability_zones.available_azs.zone_ids, zone_id))
   ]
 
   public_subnets = [
@@ -55,7 +63,7 @@ module "vpc" {
     # with a length depending on how many Zones are available
     # there is a zone Offset variable, to make sure no collisions are present with private subnet blocks
     for zone_id in data.aws_availability_zones.available_azs.zone_ids :
-    cidrsubnet(var.main_network_block, var.subnet_prefix_extension, tonumber(substr(zone_id, length(zone_id) - 1, 1)) + var.zone_offset - 1)
+    cidrsubnet(var.main_network_block, var.subnet_prefix_extension, index(data.aws_availability_zones.available_azs.zone_ids, zone_id) + var.zone_offset)
   ]
 
   # enable single NAT Gateway to save some money
