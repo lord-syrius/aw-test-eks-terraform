@@ -49,14 +49,11 @@ module "cluster" {
     }
   }
 }
-# wait until cluster creation to output their id
-# since aws_eks_cluster.this[0].id is not defined as output in module anymore :(
-data "aws_eks_cluster" "cluster" {
-  name       = var.cluster_name
-  depends_on = [module.cluster]
+output "cluster_endpoint" {
+  value = module.cluster.cluster_endpoint
 }
-output "cluster_id" {
-  value = data.aws_eks_cluster.cluster.id
+output "cluster_certificate_authority_data" {
+  value = module.cluster.cluster_certificate_authority_data
 }
 
 # create IAM role for AWS Load Balancer Controller, and attach to EKS OIDC

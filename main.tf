@@ -16,7 +16,9 @@ module "base" {
 module "config" {
   source = "./config/"
 
-  cluster_name                             = module.base.cluster_id
+  cluster_name                             = var.cluster_name
+  cluster_endpoint                         = module.base.cluster_endpoint
+  cluster_certificate_authority_data       = module.base.cluster_certificate_authority_data
   spot_termination_handler_chart_name      = var.spot_termination_handler_chart_name
   spot_termination_handler_chart_repo      = var.spot_termination_handler_chart_repo
   spot_termination_handler_chart_version   = var.spot_termination_handler_chart_version
