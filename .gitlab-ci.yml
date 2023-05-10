@@ -21,7 +21,7 @@ stages:
   - flush
 
 image:
-  name: hashicorp/terraform:1.1.9
+  name: hashicorp/terraform:1.4.6
   entrypoint:
     - env
 
