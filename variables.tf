@@ -2,6 +2,7 @@
 variable "cluster_name" {
   type        = string
   description = "EKS cluster name."
+  default     = "aw-test"
 }
 variable "iac_environment_tag" {
   type        = string
@@ -54,6 +55,7 @@ variable "spot_termination_handler_chart_namespace" {
 variable "dns_base_domain" {
   type        = string
   description = "DNS Zone name to be used from EKS Ingress."
+  default     = "aw-test.elb.localhost.localstack.cloud"
 }
 variable "ingress_gateway_name" {
   type        = string

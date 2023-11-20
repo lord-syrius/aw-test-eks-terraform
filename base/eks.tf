@@ -14,7 +14,7 @@ module "cluster" {
   version = "19.13.1"
 
   cluster_name                    = var.cluster_name
-  cluster_version                 = "1.26"
+  cluster_version                 = "1.27"
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
   subnet_ids                      = module.vpc.private_subnets
@@ -59,7 +59,7 @@ output "cluster_certificate_authority_data" {
 # create IAM role for AWS Load Balancer Controller, and attach to EKS OIDC
 module "eks_ingress_iam" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.17.1"
+  version = "~>5.17.1"
 
   role_name                              = "load-balancer-controller"
   attach_load_balancer_controller_policy = true
@@ -75,7 +75,7 @@ module "eks_ingress_iam" {
 # create IAM role for External DNS, and attach to EKS OIDC
 module "eks_external_dns_iam" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.17.1"
+  version = "~>5.17.1"
 
   role_name                     = "external-dns"
   attach_external_dns_policy    = true
@@ -90,17 +90,17 @@ module "eks_external_dns_iam" {
 }
 
 # set spot fleet Autoscaling policy
-resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
-  count = length(var.eks_managed_node_groups)
-
-  name                   = "${module.cluster.eks_managed_node_groups_autoscaling_group_names[count.index]}-autoscaling-policy"
-  autoscaling_group_name = module.cluster.eks_managed_node_groups_autoscaling_group_names[count.index]
-  policy_type            = "TargetTrackingScaling"
-
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ASGAverageCPUUtilization"
-    }
-    target_value = var.autoscaling_average_cpu
-  }
-}
+#resource "aws_autoscaling_policy" "eks_autoscaling_policy" {
+#  count = length(var.eks_managed_node_groups)
+#
+#  name                   = "${module.cluster.eks_managed_node_groups_autoscaling_group_names[count.index]}-autoscaling-policy"
+#  autoscaling_group_name = module.cluster.eks_managed_node_groups_autoscaling_group_names[count.index]
+#  policy_type            = "TargetTrackingScaling"
+#
+#  target_tracking_configuration {
+#    predefined_metric_specification {
+#      predefined_metric_type = "ASGAverageCPUUtilization"
+#    }
+#    target_value = var.autoscaling_average_cpu
+#  }
+#}

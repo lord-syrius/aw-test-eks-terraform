@@ -53,6 +53,6 @@ resource "helm_release" "external_dns" {
 
   set {
     name  = "txtOwnerId"
-    value = data.aws_route53_zone.base_domain.zone_id
+    value = aws_route53_zone.base_domain.zone_id
   }
 }

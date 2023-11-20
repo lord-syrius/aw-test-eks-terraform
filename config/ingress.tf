@@ -26,7 +26,11 @@ variable "ingress_gateway_chart_version" {
 
 # get (externally configured) DNS Zone
 # ATTENTION: if you don't have a Route53 Zone already, replace this data by a new resource
-data "aws_route53_zone" "base_domain" {
+#data "aws_route53_zone" "base_domain" {
+  #name = var.dns_base_domain
+#}
+
+resource "aws_route53_zone" "base_domain" {
   name = var.dns_base_domain
 }
 
@@ -54,7 +58,8 @@ resource "aws_route53_record" "eks_domain_cert_validation_dns" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.base_domain.zone_id
+  #zone_id         = data.aws_route53_zone.base_domain.zone_id
+  zone_id         = aws_route53_zone.base_domain.zone_id
 }
 resource "aws_acm_certificate_validation" "eks_domain_cert_validation" {
   certificate_arn         = aws_acm_certificate.eks_domain_cert.arn
@@ -95,11 +100,33 @@ resource "helm_release" "ingress_gateway" {
   repository = var.ingress_gateway_chart_repo
   version    = var.ingress_gateway_chart_version
   namespace  = "kube-system"
+  #wait       = false
+
+  values = [
+    templatefile(
+      "${path.module}/templates/alb_controller_values.yaml",
+      {
+        aws_region                     = "us-east-1",
+        eks_cluster_id                 = var.cluster_name,
+        aws_iam_role_lb_controller_arn = "${var.ingress_gateway_iam_role}"
+      }
+    )
+  ]
+
+  set {
+     name  = "vpcId"
+     value = "vpc-5dcd9e50"
+ }
 
   set {
     name  = "clusterName"
     value = var.cluster_name
   }
+
+  set {
+     name  = "region"
+     value = "us-east-1"
+ }
 
   set {
     name  = "serviceAccount.name"
@@ -110,4 +137,12 @@ resource "helm_release" "ingress_gateway" {
     name  = "serviceAccount.create"
     value = "false"
   }
+#  set {
+#     name = "image.repository"
+#     value = format("602401143452.dkr.ecr.eu-west-2.amazonaws.com/amazon/aws-load-balancer-controller")
+#  }
+#  set {
+#     name = "image.tag"
+#     value = "v2.6.2"
+# }
 }

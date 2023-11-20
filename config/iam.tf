@@ -39,7 +39,7 @@ resource "time_sleep" "wait" {
     cluster_endpoint = var.cluster_endpoint
   }
 }
-resource "kubernetes_config_map_v1_data" "aws_auth_users" {
+resource "kubernetes_config_map" "aws_auth_users" {
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
@@ -49,7 +49,7 @@ resource "kubernetes_config_map_v1_data" "aws_auth_users" {
     mapUsers = yamlencode(concat(local.admin_user_map_users, local.developer_user_map_users))
   }
 
-  force = true
+  #force = true
 
   depends_on = [time_sleep.wait]
 }

@@ -13,25 +13,25 @@ eks_managed_node_groups = {
       "t3a.medium",
       "t3a.large"
     ]
-    capacity_type = "SPOT"
-    network_interfaces = [{
-      delete_on_termination       = true
-      associate_public_ip_address = true
-    }]
-  }
-  "my-app-eks-arm" = {
-    ami_type     = "AL2_ARM_64"
-    min_size     = 1
-    max_size     = 16
-    desired_size = 1
-    instance_types = [
-      "c7g.medium",
-      "c7g.large"
-    ]
     capacity_type = "ON_DEMAND"
     network_interfaces = [{
       delete_on_termination       = true
       associate_public_ip_address = true
     }]
   }
+#  "my-app-eks-arm" = {
+#    ami_type     = "AL2_ARM_64"
+#    min_size     = 1
+#    max_size     = 16
+#    desired_size = 1
+#    instance_types = [
+#      "c7g.medium",
+#      "c7g.large"
+#    ]
+#    capacity_type = "ON_DEMAND"
+#    network_interfaces = [{
+#      delete_on_termination       = true
+#      associate_public_ip_address = true
+#    }]
+#  }
 }
