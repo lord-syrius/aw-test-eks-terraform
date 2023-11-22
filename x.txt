@@ -1,7 +1,0 @@
-tflocal apply \
-  -var-file=base-network-development.tfvars \
-  -var-file=base-eks-development.tfvars \
-  -var-file=config-eks-development.tfvars \
-  -var-file=config-iam-development.tfvars \ 
-  -var-file=config-external-dns-development.tfvars \
-  -var-file=config-namespaces-development.tfvars

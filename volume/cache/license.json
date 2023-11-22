@@ -1,9 +1,9 @@
 {
   "id": "5LSxWSocWZ",
   "license_format": "1",
-  "signature": "395d2aa7e4eafdc4bf9ed9335eaa1faf811abe96cdf9e8a809218533f3a0225e",
+  "signature": "a8f1f4a4df33dfa32208ff6267f7f6ecebd3d386775973b908a82da9e23be1fa",
   "license_type": "trial",
-  "issue_date": "2023-11-20T09:43:54+00:00",
+  "issue_date": "2023-11-21T11:43:30+00:00",
   "expiry_date": "2023-12-08T15:14:40+00:00",
   "products": [
     {
@@ -12,7 +12,7 @@
     }
   ],
   "license_status": "ACTIVE",
-  "license_secret": "TFMxLjA6zF014t+BVWYmouvUm7czpoIK3W8JQ1SCwF/5MMnc3+/25L/uh/cwUO6lli1j4NIm",
-  "last_activated": "2023-11-20T09:43:54.998259+00:00",
-  "reactivate_after": "2023-11-21T09:43:54+00:00"
+  "license_secret": "TFMxLjA6fa5bCUcYWJPhT+46j8Q2PTajtdK1frmNgsbJ5Ms5shIxzBN/VYpYj8IVsdmLQo7P",
+  "last_activated": "2023-11-21T11:43:30.769148+00:00",
+  "reactivate_after": "2023-11-22T11:43:30+00:00"
 }

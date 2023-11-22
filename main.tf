@@ -1,6 +1,6 @@
 # create EKS cluster
 module "base" {
-  source = "./base/"
+  source = "./000-base/"
 
   cluster_name            = var.cluster_name
   name_prefix             = var.name_prefix
@@ -13,8 +13,8 @@ module "base" {
 }
 
 # provision EKS cluster
-module "config" {
-  source = "./config/"
+module "eks" {
+  source = "./001-eks/"
 
   cluster_name                             = var.cluster_name
   cluster_endpoint                         = module.base.cluster_endpoint
