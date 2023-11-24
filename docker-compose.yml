@@ -14,7 +14,8 @@ services:
     environment:
       - DEBUG=${DEBUG-}
       - PERSISTENCE=${PERSISTENCE-}
-      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # required for Pro
+    # - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # required for Pro
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
       - DOCKER_HOST=unix:///var/run/docker.sock
       - DISABLE_TRANSPARENT_ENDPOINT_INJECTION=0
       - DNS_LOCAL_NAME_PATTERNS=.*.cloudfront.net
