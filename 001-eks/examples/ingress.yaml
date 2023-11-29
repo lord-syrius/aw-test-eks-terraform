@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sample-app-ingress-rules
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: my-app-eks
+    alb.ingress.kubernetes.io/load-balancer-name: my-app-eks
+    external-dns.alpha.kubernetes.io/hostname: eks.syrius.me
+    external-dns.alpha.kubernetes.io/alias: "true"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: eks.syrius.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-kubernetes
+                port:
+                  number: 8080

@@ -1,10 +1,10 @@
 {
-  "id": "5LSxWSocWZ",
+  "id": "license_0e9169a8-dc94-49a8-9b6d-2e480e43994d",
   "license_format": "1",
-  "signature": "a8f1f4a4df33dfa32208ff6267f7f6ecebd3d386775973b908a82da9e23be1fa",
+  "signature": "d410c2ef20f9ff8bfa84d22da53f6bd30869d77e05c9a0ba24c4e36e58bdce71",
   "license_type": "trial",
-  "issue_date": "2023-11-21T11:43:30+00:00",
-  "expiry_date": "2023-12-08T15:14:40+00:00",
+  "issue_date": "2023-11-23T09:04:49+00:00",
+  "expiry_date": "2023-12-23T08:11:23+00:00",
   "products": [
     {
       "name": "localstack-pro",
@@ -12,7 +12,7 @@
     }
   ],
   "license_status": "ACTIVE",
-  "license_secret": "TFMxLjA6fa5bCUcYWJPhT+46j8Q2PTajtdK1frmNgsbJ5Ms5shIxzBN/VYpYj8IVsdmLQo7P",
-  "last_activated": "2023-11-21T11:43:30.769148+00:00",
-  "reactivate_after": "2023-11-22T11:43:30+00:00"
+  "license_secret": "TFMxLjA6iKoMJIxd1+/csO5UaddYszhKsQUComxC946JngGzmOU6uHGrTj/n+LdGC7nQ5axA",
+  "last_activated": "2023-11-29T11:27:38.921539+00:00",
+  "reactivate_after": "2023-11-30T11:27:38+00:00"
 }
